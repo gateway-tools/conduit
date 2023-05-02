@@ -1,0 +1,25 @@
+local: true
+
+image:
+  tag: ""
+
+autoscaling:
+  enabled: false
+
+service:
+  nodePorts:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8888
+      nodePort: 30088
+    - name: ask
+      protocol: TCP
+      port: 8080
+      targetPort: 9999
+      nodePort: 30099
+    - name: doh
+      protocol: TCP
+      port: 11000
+      targetPort: 11000
+      nodePort: 30011    

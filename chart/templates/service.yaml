@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name}}
+  namespace: {{ .Values.namespace }}
+spec:
+  {{- if .Values.local }}
+  type: NodePort
+  {{- else }}
+  type: ClusterIP
+  {{- end }}
+  selector:
+    app: {{ .Values.name }}
+  ports:
+{{- if .Values.local }}
+{{ toYaml .Values.service.nodePorts | indent 4 }}
+{{- else }}
+    {{- range .Values.service.ports }}
+    - name: {{ .name }}
+      protocol: {{ .protocol }}
+      port: {{ .port }}
+      targetPort: {{ .targetPort }}
+    {{- end }}
+{{- end }}

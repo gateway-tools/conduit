@@ -1,0 +1,90 @@
+name: conduit
+
+namespace: conduit
+
+replicaCount: 1
+maxUnavailable: 0
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 90
+  targetMemoryUtilizationPercentage: 90
+
+imagePullSecrets: 
+  - name: "dockerconfigjson-github-com"
+
+image:
+  repository: ""
+  pullPolicy: IfNotPresent
+
+securityContext:
+  runAsUser: 10005
+  runAsGroup: 10005
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+
+ports:
+  - containerPort: 8888
+    name: http
+    protocol: TCP
+  - containerPort: 9999
+    name: ask
+    protocol: TCP 
+
+livenessProbe:
+  httpGet:
+    port: http
+    httpHeaders:
+      - name: Host
+        value: "vitalik.eth"
+  initialDelaySeconds: 30
+  timeoutSeconds: 30
+  periodSeconds: 60
+
+readinessProbe:
+  httpGet:
+    port: http
+    httpHeaders:
+      - name: Host
+        value: "vitalik.eth"
+  initialDelaySeconds: 15
+  timeoutSeconds: 30
+  periodSeconds: 60
+
+service:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8888
+      targetPort: 8888
+    - name: ask
+      protocol: TCP
+      port: 9999
+      targetPort: 9999
+    - name: doh
+      protocol: TCP
+      port: 11000
+      targetPort: 11000
+      
+reverseProxy:
+  name: caddy
+
+networkPolicies:
+  ingress:
+    reverseProxy:
+      ports:
+        - protocol: TCP
+          port: 8888
+        - protocol: TCP
+          port: 9999
+    dohResolver:
+      ports:
+        - protocol: TCP
+          port: 11000

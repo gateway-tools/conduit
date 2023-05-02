@@ -1,0 +1,36 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: "{{ .Values.name }}-egress"
+  namespace: {{ .Values.namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.name }}
+  policyTypes:
+    - Egress
+  egress:
+  - {}
+  policyTypes:
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: "{{ .Values.name }}-ingress"
+  namespace: {{ .Values.namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.name }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: {{ .Values.reverseProxy.name }}
+      ports:
+{{ toYaml .Values.networkPolicies.ingress.reverseProxy.ports | indent 8 }}
+{{ toYaml .Values.networkPolicies.ingress.dohResolver.ports | indent 8 }}
