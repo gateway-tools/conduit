@@ -38,6 +38,10 @@ const caddy = async (req, res) => {
                 res.status(422);
                 res.end();
                 break;
+            case 404:
+                res.status(404);
+                res.end();
+                break;
             default:
                 res.send(location);
                 res.status(200);
@@ -52,6 +56,10 @@ const caddy = async (req, res) => {
                 break;
             case 422:
                 res.status(422);
+                res.end();
+                break;
+            case 404:
+                res.status(404);
                 res.end();
                 break;
             default:
