@@ -1,5 +1,3 @@
-# Builder
-
 ARG NODEJS_VERSION=18
 FROM node:${NODEJS_VERSION}-bullseye-slim as build-test
 
@@ -17,7 +15,6 @@ RUN apt-get update && \
     build-essential \
     ca-certificates && \
     npm install && \
-    set -x && \
     ./node_modules/.bin/pkg -t node${NODEJS_VERSION}-linuxstatic-x64 index.js && \
     useradd -u 10005 proxyuser && \
     tail -n 1 /etc/passwd > /etc/passwd.scratch
