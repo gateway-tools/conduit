@@ -1,17 +1,24 @@
 # Builder
-FROM node:16-bullseye-slim as build-test
+
+ARG NODEJS_VERSION=18
+FROM node:${NODEJS_VERSION}-bullseye-slim as build-test
+
+ARG NODEJS_VERSION
 
 WORKDIR /build
 
-COPY . .
+COPY src .
 
 RUN apt-get update && \
     apt-get install -y \
     --no-install-recommends \ 
     make \
+    python3 \
+    build-essential \
     ca-certificates && \
-    make build && \
-    make pkg && \
+    npm install && \
+    set -x && \
+    ./node_modules/.bin/pkg -t node${NODEJS_VERSION}-linuxstatic-x64 index.js && \
     useradd -u 10005 proxyuser && \
     tail -n 1 /etc/passwd > /etc/passwd.scratch
 
